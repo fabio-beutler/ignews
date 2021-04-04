@@ -8,12 +8,14 @@ export function SignInButton() {
   const [session] = useSession()
 
   return session ? (
-    <button className={styles.signInButton} type='button'>
+    <button
+      className={styles.signInButton}
+      type='button'
+      onClick={() => signOut()}
+    >
       <FaGithub color='#04d361' />
       {session.user.name}
-      <a onClick={() => signOut()}>
-        <FiX color='#737380' className={styles.closeIcon} />
-      </a>
+      <FiX color='#737380' className={styles.closeIcon} />
     </button>
   ) : (
     <button
