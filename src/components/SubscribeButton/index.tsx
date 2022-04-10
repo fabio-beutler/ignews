@@ -36,8 +36,7 @@ export function SubscribeButton() {
   return (
     <button
       type='button'
-      className={styles.subscribeButton}
-      onClick={handleSubscribe}
+      className={styles.subscribeButton} onClick={handleSubscribe}
     >
       Subscribe now
     </button>

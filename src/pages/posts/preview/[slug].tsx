@@ -8,7 +8,9 @@ import styles from '../post.module.scss'
 import React, { useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useSession } from 'next-auth/client'
+import {signIn, useSession} from 'next-auth/client'
+import {api} from "../../../services/api";
+import {getStripeJs} from "../../../services/stripe-js";
 
 type Post = {
   slug: string
@@ -31,6 +33,30 @@ export default function PostPreview({ post }: PostPreviewProps) {
     }
   }, [session])
 
+  async function handleSubscribe() {
+    if (!session) {
+      signIn('github')
+      return
+    }
+
+    if (session.activeSubscription) {
+      router.push('/posts')
+      return
+    }
+
+    try {
+      const response = await api.post('/subscribe')
+
+      const { sessionId } = response.data
+
+      const stripe = await getStripeJs()
+
+      await stripe.redirectToCheckout({ sessionId })
+    } catch (err) {
+      alert(err.message)
+    }
+  }
+
   return (
     <>
       <Head>
@@ -47,9 +73,7 @@ export default function PostPreview({ post }: PostPreviewProps) {
           />
           <div className={styles.continueReading}>
             Wanna continue reading?
-            <Link href=''>
-              <a href=''>Subscribe now 🤗</a>
-            </Link>
+              <button onClick={handleSubscribe}>Subscribe now 🤗</button>
           </div>
         </article>
       </main>
@@ -70,8 +94,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const prismic = getPrismicClient()
 
   const response = await prismic.getByUID('publication', String(slug), {})
-
-  console.log(response)
 
   const post = {
     slug,
