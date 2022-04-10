@@ -51,7 +51,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   if (!session?.activeSubscription) {
     return {
       redirect: {
-        destination: `/posts/preview/${slug}`,
+        destination: `/posts`,
         permanent: false
       }
     }
@@ -61,7 +61,6 @@ export const getServerSideProps: GetServerSideProps = async ({
 
   const response = await prismic.getByUID('publication', String(slug), {})
 
-  console.log(response)
 
   const post = {
     slug,
